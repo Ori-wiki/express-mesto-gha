@@ -1,16 +1,21 @@
-const mongoose = require('mongoose');
-const path = require('path');
 const express = require('express');
-// const { setNoCacheHeaders } = require('./middlewares');
-const app = express();
+const mongoose = require('mongoose');
+
 const { PORT = 3000 } = process.env;
+const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use(setNoCacheHeaders);
-
-app.listen(PORT, () => {
-  console.log(`Ссылка на сервер ${PORT}`);
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
+
+// подключаем логгер запросов
+
+// роуты, которым нужна авторизация
+app.use('/', require('./routes/users'));
+
+// запрос к несуществующему роуту
+
+// подключаем логгер ошибок
+
+app.listen(PORT);
