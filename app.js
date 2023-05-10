@@ -12,7 +12,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 // подключаем логгер запросов
 
 // роуты, которым нужна авторизация
-app.use('/', require('./routes/users'));
+// app.use('/', require('./routes/users'));
 
 // запрос к несуществующему роуту
 
