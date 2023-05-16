@@ -11,13 +11,17 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 });
 
 app.use(express.json());
-// подключаем логгер запросов
+
 app.use('/', usersRoutes);
-// роуты, которым нужна авторизация
-// app.use('/', require('./routes/users'));
 
-// запрос к несуществующему роуту
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64626f207e958112c2d7252c',
+  };
 
-// подключаем логгер ошибок
+  next();
+});
 
 app.listen(PORT);
+
+//  _id 64626f207e958112c2d7252c
