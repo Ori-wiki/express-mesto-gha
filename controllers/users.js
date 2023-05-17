@@ -11,10 +11,9 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 const createUser = (req, res) => {
-  User.create(req.body).then((user) => res.status(201).send(user));
-  // .catch((e) =>
-  //   res.status(500).send({ message: `error creating user ${e}` })
-  // );
+  const { name, link } = req.body;
+  User.create({ name, link, owner: req.user._id })
+    .then((card) => res.status(201).send(card));
 };
 
 module.exports = { createUser, getUsers, getUserById };
