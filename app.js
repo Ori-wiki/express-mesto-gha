@@ -1,16 +1,27 @@
-const mongoose = require('mongoose');
-const path = require('path');
 const express = require('express');
-// const { setNoCacheHeaders } = require('./middlewares');
-const app = express();
-const { PORT = 3000 } = process.env;
+const mongoose = require('mongoose');
+const usersRoutes = require('./routes/users');
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+const { PORT = 3000 } = process.env;
+const app = express();
+
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use(setNoCacheHeaders);
 
-app.listen(PORT, () => {
-  console.log(`Ссылка на сервер ${PORT}`);
+app.use('/', usersRoutes);
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64626f207e958112c2d7252c',
+  };
+
+  next();
 });
+
+app.listen(PORT);
+
+//  _id 64626f207e958112c2d7252c
