@@ -17,9 +17,24 @@ const deleteCard = (req, res, next) => {
 };
 const createCards = (req, res) => {
   const { name, link } = req.body;
-
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(200).send(card));
+  Card.create({ name, link, owner: req.user._id }).then((card) => res.status(200).send(card));
 };
 
-module.exports = { getCards, deleteCard, createCards };
+const likeCard = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  { new: true },
+);
+
+const dislikeCard = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $pull: { likes: req.user._id } }, // убрать _id из массива
+  { new: true },
+);
+module.exports = {
+  getCards,
+  deleteCard,
+  createCards,
+  likeCard,
+  dislikeCard,
+};
