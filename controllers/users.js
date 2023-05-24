@@ -6,7 +6,8 @@ const getUsers = (req, res) => {
     .catch((e) => res.status(500).send({ message: `Ошибка получения пользователей ${e}` }));
 };
 const getUserById = (req, res) => {
-  User.findById(req.params.userId)
+  const { userId } = req.params;
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
