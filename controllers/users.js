@@ -1,26 +1,65 @@
 const User = require('../models/user');
 
-const getUsers = (req, res, next) => {
+const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch(next);
+    .catch((e) => res.status(500).send({ message: `Ошибка получения пользователей ${e}` }));
 };
-const getUserById = (req, res, next) => {
+const getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(200).send(user))
-    .catch(next);
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send(user);
+    })
+    .catch((e) => res.status(500).send({ message: `Ошибка получения пользователя ${e}` }));
 };
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar }).then((user) => res.status(201).send(user));
+  User.create({ name, about, avatar })
+    .then((user) => res.status(201).send(user))
+    .catch((e) => {
+      if (e.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы неверные данные' });
+      } else {
+        res.status(500).send({ message: `Ошибка создания пользователя ${e}` });
+      }
+    });
 };
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }).then((user) => res.status(200).send(user));
+  User.findByIdAndUpdate(req.user._id, { name, about })
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send(user);
+    })
+    .catch((e) => {
+      if (e.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы неверные данные' });
+      } else {
+        res.status(500).send({ message: `Ошибка создания пользователя ${e}` });
+      }
+    });
 };
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }).then((user) => res.status(200).send(user));
+  User.findByIdAndUpdate(req.user._id, { avatar })
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send(user);
+    })
+    .catch((e) => {
+      if (e.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы неверные данные' });
+      } else {
+        res.status(500).send({ message: `Ошибка создания пользователя ${e}` });
+      }
+    });
 };
 
 module.exports = {
