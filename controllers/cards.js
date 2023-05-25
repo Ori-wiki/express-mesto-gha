@@ -15,15 +15,17 @@ const deleteCard = (req, res) => {
         Card.findByIdAndRemove(cardId)
           .then((deletedCard) => res.status(200).send(deletedCard))
           .catch((e) => {
-            if (e.name === 'CastError') {
-              res.status(400).send({ message: `Переданы некорректные данные ${e}` });
-            } else {
-              res.status(500).send({ message: `Ошибка удаления карточек ${e}` });
-            }
+            res.status(500).send({ message: `Ошибка удаления карточки ${e}` });
           });
       }
     })
-    .catch((e) => res.status(500).send({ message: `Ошибка удаления карточки ${e}` }));
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        res.status(400).send({ message: `Переданы некорректные данные ${e}` });
+      } else {
+        res.status(500).send({ message: `Ошибка удаления карточки ${e}` });
+      }
+    });
 };
 const createCards = (req, res) => {
   const { name, link } = req.body;
