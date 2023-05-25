@@ -13,16 +13,15 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 app.use(express.json());
 
-app.use('/', usersRoutes);
-app.use('/', cardsRoutes);
-
 app.use((req, res, next) => {
   req.user = {
-    _id: '64626f207e958112c2d7252c',
+    _id: '6464f2d56381cf4b88d4aa88',
   };
-
   next();
 });
+
+app.use('/', usersRoutes);
+app.use('/', cardsRoutes);
 
 app.listen(PORT);
 
