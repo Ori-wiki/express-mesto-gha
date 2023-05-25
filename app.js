@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('express').Router();
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -24,10 +23,9 @@ app.use((req, res, next) => {
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
 
-router.use((req, res) => {
+app.use('*', (req, res, next) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
+  next();
 });
 
 app.listen(PORT);
-
-//  _id 64626f207e958112c2d7252c
