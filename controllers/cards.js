@@ -5,16 +5,16 @@ const getCards = (req, res) => {
     .then((cards) => res.status(200).send(cards))
     .catch((e) => res.status(500).send({ message: `Ошибка получения карточек ${e}` }));
 };
-const deleteCard = (req, res, next) => {
+const deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
+        res.status(400).send({ message: 'Карточка не найдена' });
       } else {
         Card.findByIdAndRemove(cardId)
           .then((deletedCard) => res.status(200).send(deletedCard))
-          .catch(next);
+          .catch((e) => res.status(500).send({ message: `Ошибка получения карточек ${e}` }));
       }
     })
     .catch((e) => res.status(500).send({ message: `Ошибка удаления карточки ${e}` }));
