@@ -5,16 +5,23 @@ const getUsers = (req, res) => {
     .then((users) => res.status(200).send(users))
     .catch((e) => res.status(500).send({ message: `Ошибка получения пользователей ${e}` }));
 };
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
     .then((user) => {
       if (!user) {
-        res.status(400).send({ message: 'Пользователь не найден' });
+        res.status(404).send({ message: 'Пользователь не найден' });
       }
       res.status(200).send(user);
     })
-    .catch((e) => res.status(500).send({ message: `Ошибка получения пользователя ${e}` }));
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        res.status(400).send({ message: `Переданы некорректные данные ${e}` });
+      } else {
+        res.status(500).send({ message: `Ошибка получения пользователя ${e}` });
+      }
+    })
+    .catch(next);
 };
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
