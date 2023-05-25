@@ -10,11 +10,17 @@ const deleteCard = (req, res) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        res.status(400).send({ message: 'Карточка не найдена' });
+        res.status(404).send({ message: 'Карточка не найдена' });
       } else {
         Card.findByIdAndRemove(cardId)
           .then((deletedCard) => res.status(200).send(deletedCard))
-          .catch((e) => res.status(500).send({ message: `Ошибка получения карточек ${e}` }));
+          .catch((e) => {
+            if (e.name === 'CastError') {
+              res.status(400).send({ message: `Переданы некорректные данные ${e}` });
+            } else {
+              res.status(500).send({ message: `Ошибка удаления карточек ${e}` });
+            }
+          });
       }
     })
     .catch((e) => res.status(500).send({ message: `Ошибка удаления карточки ${e}` }));
