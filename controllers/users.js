@@ -5,7 +5,7 @@ const getUsers = (req, res) => {
     .then((users) => res.status(200).send(users))
     .catch((e) => res.status(500).send({ message: `Ошибка получения пользователей ${e}` }));
 };
-const getUserById = (req, res, next) => {
+const getUserById = (req, res) => {
   const { id } = req.params;
   User.findById(id)
     .then((user) => {
@@ -20,8 +20,7 @@ const getUserById = (req, res, next) => {
       } else {
         res.status(500).send({ message: `Ошибка получения пользователя ${e}` });
       }
-    })
-    .catch(next);
+    });
 };
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
