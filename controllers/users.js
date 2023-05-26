@@ -8,10 +8,10 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   const { id } = req.params;
   User.findById(id)
+    .orFail(() => {
+      res.status(404).send({ message: 'Пользователь не найден' });
+    })
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-      }
       res.status(200).send(user);
     })
     .catch((e) => {
@@ -40,6 +40,7 @@ const updateProfile = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
+        return;
       }
       res.status(200).send(user);
     })
@@ -57,6 +58,7 @@ const updateAvatar = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
+        return;
       }
       res.status(200).send(user);
     })
