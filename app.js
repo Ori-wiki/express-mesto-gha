@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -12,6 +13,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 });
 
 app.use(express.json());
+
+app.use(helmet());
+app.disable('x-powered-by');
 
 app.use((req, res, next) => {
   req.user = {
