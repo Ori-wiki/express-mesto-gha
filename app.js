@@ -83,8 +83,8 @@ app.post('/signup', signUp, createUser);
 
 app.use(auth);
 
-app.use('/cards', cards);
-app.use('/users', users);
+app.use('/', cards);
+app.use('/', users);
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена.'));
 });
@@ -92,6 +92,7 @@ app.use('*', (req, res, next) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
+  console.log('CHF<JNFKJ APP.USE = handler');
   const { statusCode = ERROR_DEFAULT, message = MESSAGE_DEFAULT } = err;
   res.status(statusCode).send({ message });
   next();
