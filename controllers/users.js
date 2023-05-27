@@ -114,6 +114,26 @@ const login = (req, res, next) => {
     })
     .catch(next);
 };
+const getUserInfo = (req, res, next) => {
+  const id = req.user._id;
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        // throw new NotFoundError('Пользователь по указанному _id не найден.');
+        res.status(500).send({ message: 'Ошибка создания пользователя' });
+      }
+      return res.send(user);
+    })
+    .catch((e) => {
+      if (e.name === 'CastError') {
+        // throw new BadRequestError('Переданы некорректные данные');
+        res.status(500).send({ message: `Ошибка создания пользователя ${e}` });
+      } else {
+        next(e);
+      }
+    })
+    .catch(next);
+};
 
 module.exports = {
   createUser,
@@ -122,4 +142,5 @@ module.exports = {
   updateProfile,
   updateAvatar,
   login,
+  getUserInfo,
 };
