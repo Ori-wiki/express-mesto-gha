@@ -34,37 +34,71 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email,
-  } = req.body;
-  bcrypt
-    .hash(req.body.password, 10)
+  // const {
+  //   name, about, avatar, email,
+  // } = req.body;
+  // bcrypt
+  //   .hash(req.body.password, 10)
+  //   .then((hash) => User.create({
+  //     name,
+  //     about,
+  //     avatar,
+  //     email,
+  //     password: hash,
+  //   }))
+  //   .then((user) => {
+  //     res.status(201).send({
+  //       name: user.name,
+  //       about: user.about,
+  //       avatar: user.avatar,
+  //       _id: user._id.toString(),
+  //       email: user.email,
+  //     });
+  //   })
+  //   .catch((e) => {
+  //     if (e.name === 'ValidationError') {
+  //       throw new BadRequestError('Переданы неверные данные');
+  //     } else if (e.code === 11000) {
+  //       throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
+  //     } else {
+  //       next(e);
+  //     }
+  //   })
+  //   .catch(next);
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    next(new BadRequestError('Неправильный логин или пароль.'));
+  }
+
+  return User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        next(new MangoEmailError(`Пользователь с ${email} уже существует.`));
+      }
+
+      return bcrypt.hash(password, 10);
+    })
     .then((hash) => User.create({
-      name,
-      about,
-      avatar,
       email,
       password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
     }))
-    .then((user) => {
-      res.status(201).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id.toString(),
-        email: user.email,
-      });
-    })
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        throw new BadRequestError('Переданы неверные данные');
-      } else if (e.code === 11000) {
-        throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
-      } else {
-        next(e);
+    .then((user) => res.status(200).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id,
+      email: user.email,
+    }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Неверные данные о пользователе или неверная ссылка на аватар.'));
       }
-    })
-    .catch(next);
+      return next(err);
+    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -123,8 +157,10 @@ const login = (req, res, next) => {
   //   })
   //   .catch(next);
   const { email, password } = req.body;
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log(user);
       // проверим существует ли такой email или пароль
       if (!user || !password) {
         return next(new BadRequestError('Неверный email или пароль.'));
