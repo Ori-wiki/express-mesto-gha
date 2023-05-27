@@ -13,6 +13,10 @@ const {
   updateAvatarValidation,
 } = require('../middlewares/validation');
 
+const auth = require('../middlewares/auth');
+
+router.use(auth);
+
 router.get('/users', getUsers);
 
 router.get('/users/me', getUserInfo);
