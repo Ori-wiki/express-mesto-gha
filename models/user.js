@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const isURL = require('validator/lib/isURL');
+const isEmail = require('validator/lib/isEmail');
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,6 +23,15 @@ const userSchema = new mongoose.Schema(
         message: 'Некорректный URL',
       },
       required: [true, 'Поле "avatar" должно быть заполнено'],
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      validate: {
+        validator: (v) => isEmail(v),
+        message: 'Неправильный формат почты',
+      },
     },
   },
   { versionKey: false },
