@@ -92,7 +92,6 @@ app.use('*', (req, res, next) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  console.log('CHF<JNFKJ APP.USE = handler');
   const { statusCode = ERROR_DEFAULT, message = MESSAGE_DEFAULT } = err;
   res.status(statusCode).send({ message });
   next();
