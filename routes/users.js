@@ -8,13 +8,19 @@ const {
   getUserInfo,
 } = require('../controllers/users');
 
+const {
+  userIdValidation,
+  updateUserValidation,
+  updateAvatarValidation,
+} = require('../middlewares/validation');
+
 router.get('/users', getUsers);
 
-router.get('/users/:id', getUserById);
+router.get('/users/:id', userIdValidation, getUserById);
 
-router.patch('/users/me', updateProfile);
+router.patch('/users/me', updateUserValidation, updateProfile);
 
-router.patch('/users/me/avatar', updateAvatar);
+router.patch('/users/me/avatar', updateAvatarValidation, updateAvatar);
 
 router.get('/users/me', getUserInfo);
 
