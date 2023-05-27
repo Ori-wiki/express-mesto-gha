@@ -25,13 +25,13 @@ app.use(express.json());
 app.use(helmet());
 app.disable('x-powered-by');
 
-app.post('/signin', signIn, login);
 app.post('/signup', signUp, createUser);
-
-app.use(auth);
+app.post('/signin', signIn, login);
 
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
+
+app.use(auth);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Запрашиваемая страница не найдена'));
