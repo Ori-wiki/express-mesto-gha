@@ -1,5 +1,4 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
 const BadRequestError = require('../errors/BadRequestError');
 
 const signIn = celebrate({
@@ -8,6 +7,14 @@ const signIn = celebrate({
     password: Joi.string().required().min(8).max(30),
   }),
 });
+const regex = /^(http|https):\/\/(\?:www\.)?[a-zA-Z0-9-._~:/?#[]@!$&'()+,;=]+(?:#\w)?$/;
+const avatarUrl = 'https://www.example.com/avatar.jpg';
+
+if (regex.test(avatarUrl)) {
+  console.log('Avatar URL is valid');
+} else {
+  console.log('Avatar URL is not valid');
+}
 
 const signUp = celebrate({
   body: Joi.object().keys({
@@ -16,7 +23,7 @@ const signUp = celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!regex.test(value)) {
         throw new BadRequestError('Неправильный формат URL адреса');
       }
       return value;
@@ -40,7 +47,7 @@ const updateUserValidation = celebrate({
 const updateAvatarValidation = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!regex.test(value)) {
         throw new BadRequestError('Неправильный формат URL адреса');
       }
       return value;
@@ -52,7 +59,7 @@ const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!regex.test(value)) {
         throw new BadRequestError('Неправильный формат URL адреса');
       }
       return value;
