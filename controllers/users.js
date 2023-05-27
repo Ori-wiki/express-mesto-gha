@@ -4,9 +4,9 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const MangoEmailError = require('../errors/MangoEmailError');
-const AuthError = require('../errors/AuthError');
+// const AuthError = require('../errors/AuthError');
 
-const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
+// const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
 // NODE_ENV=production
 // JWT_SECRET=eb28135ebcfc17578f96d4d65b6c7871f2c803be4180c165061d5c2db621c51b
 
@@ -34,11 +34,43 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 const createUser = (req, res, next) => {
+  // const {
+  //   name, about, avatar, email,
+  // } = req.body;
+  // bcrypt
+  //   .hash(req.body.password, 10)
+  //   .then((hash) => User.create({
+  //     name,
+  //     about,
+  //     avatar,
+  //     email,
+  //     password: hash,
+  //   }))
+  //   .then((user) => {
+  //     res.status(201).send({
+  //       name: user.name,
+  //       about: user.about,
+  //       avatar: user.avatar,
+  //       _id: user._id.toString(),
+  //       email: user.email,
+  //     });
+  //   })
+  //   .catch((e) => {
+  //     if (e.name === 'ValidationError') {
+  //       throw new BadRequestError('Переданы неверные данные');
+  //     } else if (e.code === 11000) {
+  //       throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
+  //     } else {
+  //       next(e);
+  //     }
+  //   })
+  //   .catch(next);
   const {
-    name, about, avatar, email,
+    name, about, avatar, email, password,
   } = req.body;
+
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -46,25 +78,22 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => {
-      res.status(201).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id.toString(),
-        email: user.email,
-      });
-    })
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        throw new BadRequestError('Переданы неверные данные');
-      } else if (e.code === 11000) {
-        throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
-      } else {
-        next(e);
+    .then((user) => res.status(201).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      _id: user._id,
+    }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Неправильные данные.'));
       }
-    })
-    .catch(next);
+      if (err.code === 11000) {
+        return next(new MangoEmailError('Данный email уже зарегистрирован.'));
+      }
+      return next(err);
+    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -104,22 +133,31 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 const login = (req, res, next) => {
+  // const { email, password } = req.body;
+  // User.findUserByCredentials({ email, password })
+  //   .then((user) => {
+  //     if (!user) {
+  //       throw new NotFoundError('Пользователь не найден');
+  //     } else {
+  //       const token = jwt.sign(
+  //         { _id: user._id },
+  //         NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
+  //         { expiresIn: '7d' },
+  //       );
+  //       res.status(200).send({ token });
+  //     }
+  //   })
+  //   .catch(() => {
+  //     throw new AuthError('Неправильный логин или пароль');
+  //   })
+  //   .catch(next);
   const { email, password } = req.body;
-  User.findUserByCredentials({ email, password })
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      } else {
-        const token = jwt.sign(
-          { _id: user._id },
-          NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
-          { expiresIn: '7d' },
-        );
-        res.status(200).send({ token });
-      }
-    })
-    .catch(() => {
-      throw new AuthError('Неправильный логин или пароль');
+      res.send({
+        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
+      });
     })
     .catch(next);
 };
