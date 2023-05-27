@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
         message: 'Неправильный формат почты',
       },
     },
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
+      select: false,
+    },
   },
   { versionKey: false },
 );
