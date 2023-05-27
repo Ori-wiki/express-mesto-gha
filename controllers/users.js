@@ -136,6 +136,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials({ email, password })
     .then((user) => {
+      console.log(user);
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       } else {
@@ -145,6 +146,7 @@ const login = (req, res, next) => {
       }
     })
     .catch(() => {
+      // console.log('zalp');
       throw new AuthError('Неправильный логин или пароль');
     })
     .catch(next);
