@@ -17,10 +17,10 @@ router.get('/users', getUsers);
 
 router.get('/users/:id', userIdValidation, getUserById);
 
+router.get('/users/me', getUserInfo);
+
 router.patch('/users/me', updateUserValidation, updateProfile);
 
 router.patch('/users/me/avatar', updateAvatarValidation, updateAvatar);
-
-router.get('/users/me', getUserInfo);
 
 module.exports = router;
