@@ -8,13 +8,6 @@ const signIn = celebrate({
   }),
 });
 const regex = /^(http|https):\/\/(\?:www\.)?[a-zA-Z0-9-._~:/?#[]@!$&'()+,;=]+(?:#\w)?$/;
-const avatarUrl = 'https://www.example.com/avatar.jpg';
-
-if (regex.test(avatarUrl)) {
-  console.log('Avatar URL is valid');
-} else {
-  console.log('Avatar URL is not valid');
-}
 
 const signUp = celebrate({
   body: Joi.object().keys({

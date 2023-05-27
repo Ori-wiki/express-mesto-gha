@@ -34,6 +34,8 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 const createUser = (req, res, next) => {
+  console.log('qwe');
+  console.log(req);
   const {
     name, about, avatar, email,
   } = req.body;

@@ -7,10 +7,10 @@ const extractBearerToken = function (header) {
   return header.replace('Bearer ', '');
 };
 
-//* мидлвара авторизации - проверяет наличие токена и верифицирует его
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
-
+  console.log(req);
+  // console.log(authorization);
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new AuthError('Необходима авторизация');
   }
