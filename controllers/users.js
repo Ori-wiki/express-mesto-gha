@@ -16,8 +16,8 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 const getUserById = (req, res, next) => {
-  console.log('qasdadsadsadasdadasdsadasdadasdwe');
   const { _id } = req.params;
+  console.log(_id);
   User.findById(_id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден');
@@ -47,13 +47,15 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user._id,
-      email: user.email,
-    }))
+    .then((user) => {
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id.toString(),
+        email: user.email,
+      });
+    })
     .catch((e) => {
       if (e.name === 'ValidationError') {
         throw new BadRequestError('Переданы неверные данные');
@@ -65,6 +67,7 @@ const createUser = (req, res, next) => {
     })
     .catch(next);
 };
+
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
@@ -121,8 +124,8 @@ const login = (req, res, next) => {
     })
     .catch(next);
 };
+
 const getUserInfo = (req, res, next) => {
-  console.log('qasdadsadsadasdadasdsadasdadasdwe');
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
@@ -140,7 +143,6 @@ const getUserInfo = (req, res, next) => {
     })
     .catch(next);
 };
-
 module.exports = {
   createUser,
   getUsers,
