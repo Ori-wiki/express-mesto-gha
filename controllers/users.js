@@ -4,7 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const MangoEmailError = require('../errors/MangoEmailError');
-// const AuthError = require('../errors/AuthError');
+const AuthError = require('../errors/AuthError');
 
 // const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
 // NODE_ENV=production
@@ -133,31 +133,19 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 const login = (req, res, next) => {
-  // const { email, password } = req.body;
-  // User.findUserByCredentials({ email, password })
-  //   .then((user) => {
-  //     if (!user) {
-  //       throw new NotFoundError('Пользователь не найден');
-  //     } else {
-  //       const token = jwt.sign(
-  //         { _id: user._id },
-  //         NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
-  //         { expiresIn: '7d' },
-  //       );
-  //       res.status(200).send({ token });
-  //     }
-  //   })
-  //   .catch(() => {
-  //     throw new AuthError('Неправильный логин или пароль');
-  //   })
-  //   .catch(next);
   const { email, password } = req.body;
-
-  return User.findUserByCredentials(email, password)
+  return User.findUserByCredentials({ email, password })
     .then((user) => {
-      res.status(200).send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
-      });
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        res.status(200).send({
+          token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
+        });
+      }
+    })
+    .catch(() => {
+      throw new AuthError('Неправильный логин или пароль');
     })
     .catch(next);
 };
