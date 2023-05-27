@@ -4,9 +4,9 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const MangoEmailError = require('../errors/MangoEmailError');
-// const AuthError = require('../errors/AuthError');
+const AuthError = require('../errors/AuthError');
 
-// const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
+const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
 // NODE_ENV=production
 // JWT_SECRET=eb28135ebcfc17578f96d4d65b6c7871f2c803be4180c165061d5c2db621c51b
 
@@ -34,6 +34,31 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 const createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email,
+  } = req.body;
+  bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({ data: user.toJSON() });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError('Переданы неверные данные');
+      } else if (err.name === 'MongoError') {
+        throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
+      } else {
+        next(err);
+      }
+    })
+    .catch(next);
   // const {
   //   name, about, avatar, email,
   // } = req.body;
@@ -65,40 +90,6 @@ const createUser = (req, res, next) => {
   //     }
   //   })
   //   .catch(next);
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    next(new BadRequestError('Неправильный логин или пароль.'));
-  }
-
-  return User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        next(new MangoEmailError(`Пользователь с ${email} уже существует.`));
-      }
-
-      return bcrypt.hash(password, 10);
-    })
-    .then((hash) => User.create({
-      email,
-      password: hash,
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-    }))
-    .then((user) => res.status(200).send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user._id,
-      email: user.email,
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Неверные данные о пользователе или неверная ссылка на аватар.'));
-      }
-      return next(err);
-    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -138,41 +129,22 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 const login = (req, res, next) => {
-  // const { email, password } = req.body;
-  // User.findUserByCredentials({ email, password })
-  //   .then((user) => {
-  //     if (!user) {
-  //       throw new NotFoundError('Пользователь не найден');
-  //     } else {
-  //       const token = jwt.sign(
-  //         { _id: user._id },
-  //         NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
-  //         { expiresIn: '7d' },
-  //       );
-  //       return res.send({ token });
-  //     }
-  //   })
-  //   .catch(() => {
-  //     throw new AuthError('Неправильный логин или пароль');
-  //   })
-  //   .catch(next);
   const { email, password } = req.body;
-
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials({ email, password })
     .then((user) => {
-      console.log(user);
-      // проверим существует ли такой email или пароль
-      if (!user || !password) {
-        return next(new BadRequestError('Неверный email или пароль.'));
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        const token = jwt.sign(
+          { _id: user._id },
+          NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
+          { expiresIn: '7d' },
+        );
+        return res.send({ token });
       }
-
-      // создадим токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
-        expiresIn: '7d',
-      });
-      console.log(user);
-      // вернём токен
-      return res.send({ token });
+    })
+    .catch(() => {
+      throw new AuthError('Неправильный логин или пароль');
     })
     .catch(next);
 };
