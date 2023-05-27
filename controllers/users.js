@@ -163,6 +163,7 @@ const login = (req, res, next) => {
 };
 
 const getUserInfo = (req, res, next) => {
+  console.log('ПУЕ');
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
