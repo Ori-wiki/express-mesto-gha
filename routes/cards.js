@@ -10,6 +10,10 @@ const {
 
 const { createCardValidation, cardIdValidation } = require('../middlewares/validation');
 
+const auth = require('../middlewares/auth');
+
+router.use(auth);
+
 router.get('/cards', getCards);
 
 router.post('/cards', createCardValidation, createCards);
