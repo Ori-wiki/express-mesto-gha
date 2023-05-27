@@ -47,49 +47,24 @@ const createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => {
-      res.status(201).send({ data: user.toJSON() });
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id.toString(),
+        email: user.email,
+      });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .catch((e) => {
+      if (e.name === 'ValidationError') {
         throw new BadRequestError('Переданы неверные данные');
-      } else if (err.name === 'MongoError') {
+      } else if (e.code === 11000) {
         throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
       } else {
-        next(err);
+        next(e);
       }
     })
     .catch(next);
-  // const {
-  //   name, about, avatar, email,
-  // } = req.body;
-  // bcrypt
-  //   .hash(req.body.password, 10)
-  //   .then((hash) => User.create({
-  //     name,
-  //     about,
-  //     avatar,
-  //     email,
-  //     password: hash,
-  //   }))
-  //   .then((user) => {
-  //     res.status(201).send({
-  //       name: user.name,
-  //       about: user.about,
-  //       avatar: user.avatar,
-  //       _id: user._id.toString(),
-  //       email: user.email,
-  //     });
-  //   })
-  //   .catch((e) => {
-  //     if (e.name === 'ValidationError') {
-  //       throw new BadRequestError('Переданы неверные данные');
-  //     } else if (e.code === 11000) {
-  //       throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
-  //     } else {
-  //       next(e);
-  //     }
-  //   })
-  //   .catch(next);
 };
 
 const updateProfile = (req, res, next) => {
