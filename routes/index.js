@@ -5,8 +5,8 @@ const { createUser, login } = require('../controllers/users');
 const { signIn, signUp } = require('../middlewares/validation');
 const NotFoundError = require('../errors/NotFoundError');
 
-router.post('/signup', signIn, createUser);
-router.post('/signin', signUp, login);
+router.post('/signup', signUp, createUser);
+router.post('/signin', signIn, login);
 
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
