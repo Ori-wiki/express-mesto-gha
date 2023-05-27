@@ -28,10 +28,10 @@ app.disable('x-powered-by');
 app.post('/signup', signUp, createUser);
 app.post('/signin', signIn, login);
 
+app.use(auth);
+
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
-
-app.use(auth);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Запрашиваемая страница не найдена'));
