@@ -11,6 +11,8 @@ const deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
+      } else if (card.owner.valueOf() !== req.user._id) {
+        // throw new ForbiddenError('Нельзя удалить чужую карточку!');
       } else {
         Card.findByIdAndRemove(cardId)
           .then((deletedCard) => res.status(200).send(deletedCard))
