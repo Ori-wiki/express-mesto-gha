@@ -104,22 +104,39 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 const login = (req, res, next) => {
+  // const { email, password } = req.body;
+  // User.findUserByCredentials({ email, password })
+  //   .then((user) => {
+  //     if (!user) {
+  //       throw new NotFoundError('Пользователь не найден');
+  //     } else {
+  //       const token = jwt.sign(
+  //         { _id: user._id },
+  //         NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
+  //         { expiresIn: '7d' },
+  //       );
+  //       return res.send({ token });
+  //     }
+  //   })
+  //   .catch(() => {
+  //     throw new AuthError('Неправильный логин или пароль');
+  //   })
+  //   .catch(next);
   const { email, password } = req.body;
-  User.findUserByCredentials({ email, password })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      } else {
-        const token = jwt.sign(
-          { _id: user._id },
-          NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
-          { expiresIn: '7d' },
-        );
-        return res.send({ token });
+      // проверим существует ли такой email или пароль
+      if (!user || !password) {
+        return next(new BadRequestError('Неверный email или пароль.'));
       }
-    })
-    .catch(() => {
-      throw new AuthError('Неправильный логин или пароль');
+
+      // создадим токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+      console.log(user);
+      // вернём токен
+      return res.send({ token });
     })
     .catch(next);
 };
