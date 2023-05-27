@@ -8,7 +8,7 @@ const signIn = celebrate({
     password: Joi.string().required().min(8).max(30),
   }),
 });
-const regex = /^(http|https):\/\/(\?:www\.)?[a-zA-Z0-9-._~:/?#[]@!$&'()+,;=]+(?:#\w)?$/;
+// const regex = /^(http|https):\/\/(\?:www\.)?[a-zA-Z0-9-._~:/?#[]@!$&'()+,;=]+(?:#\w)?$/;
 
 const signUp = celebrate({
   body: Joi.object().keys({
@@ -46,8 +46,14 @@ const updateUserValidation = celebrate({
 
 const updateAvatarValidation = celebrate({
   body: Joi.object().keys({
+    // avatar: Joi.string().custom((value) => {
+    //   if (!regex.test(value)) {
+    //     throw new BadRequestError('Неправильный формат URL адреса');
+    //   }
+    //   return value;
+    // }),
     avatar: Joi.string().custom((value) => {
-      if (!regex.test(value)) {
+      if (!validator.isURL(value, { require_protocol: true })) {
         throw new BadRequestError('Неправильный формат URL адреса');
       }
       return value;
@@ -59,7 +65,11 @@ const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().custom((value) => {
-      if (!regex.test(value)) {
+      // if (!regex.test(value)) {
+      //   throw new BadRequestError('Неправильный формат URL адреса');
+      // }
+      // return value;
+      if (!validator.isURL(value, { require_protocol: true })) {
         throw new BadRequestError('Неправильный формат URL адреса');
       }
       return value;
