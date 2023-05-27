@@ -17,7 +17,6 @@ const getUsers = (req, res, next) => {
 };
 const getUserById = (req, res, next) => {
   const { _id } = req.params;
-  console.log(_id);
   User.findById(_id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден');
@@ -116,7 +115,7 @@ const login = (req, res, next) => {
           NODE_ENV === 'production' ? JWT_SECRET : 'dev-key',
           { expiresIn: '7d' },
         );
-        res.send({ token });
+        return res.send({ token });
       }
     })
     .catch(() => {
