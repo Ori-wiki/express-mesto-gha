@@ -157,8 +157,10 @@ const login = (req, res, next) => {
   //   })
   //   .catch(next);
   const { email, password } = req.body;
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log(user);
       // проверим существует ли такой email или пароль
       if (!user || !password) {
         return next(new BadRequestError('Неверный email или пароль.'));

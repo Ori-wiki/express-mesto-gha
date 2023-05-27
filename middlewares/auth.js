@@ -38,6 +38,7 @@ module.exports = (req, res, next) => {
 
   // убеждаемся, что он есть или начинается с Bearer
   if (!authorization || !authorization.startsWith('Bearer ')) {
+    console.log('1');
     throw new AuthError('Необходима авторизация.');
   }
 
@@ -50,6 +51,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
     // отправим ошибку, если не получилось
+    console.log('2');
     throw new AuthError('Необходима авторизация.');
   }
 
