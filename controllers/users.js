@@ -16,8 +16,9 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 const getUserById = (req, res, next) => {
-  const { id } = req.params;
-  User.findById(id)
+  console.log('qasdadsadsadasdadasdsadasdadasdwe');
+  const { _id } = req.params;
+  User.findById(_id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден');
     })
@@ -121,8 +122,9 @@ const login = (req, res, next) => {
     .catch(next);
 };
 const getUserInfo = (req, res, next) => {
-  const id = req.user._id;
-  User.findById(id)
+  console.log('qasdadsadsadasdadasdsadasdadasdwe');
+  const { _id } = req.user;
+  User.findById(_id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
