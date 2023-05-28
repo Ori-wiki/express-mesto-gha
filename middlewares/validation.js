@@ -64,16 +64,18 @@ const updateAvatarValidation = celebrate({
 const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().custom((value) => {
-      // if (!regex.test(value)) {
-      //   throw new BadRequestError('Неправильный формат URL адреса');
-      // }
-      // return value;
-      if (!validator.isURL(value, { require_protocol: true })) {
-        throw new BadRequestError('Неправильный формат URL адреса');
-      }
-      return value;
-    }),
+    link: Joi.string()
+      .required()
+      .custom((value) => {
+        // if (!regex.test(value)) {
+        //   throw new BadRequestError('Неправильный формат URL адреса');
+        // }
+        // return value;
+        if (!validator.isURL(value, { require_protocol: true })) {
+          throw new BadRequestError('Неправильный формат URL адреса');
+        }
+        return value;
+      }),
   }),
 });
 
