@@ -47,7 +47,7 @@ router.get('/users', getUsers);
 
 router.get('/users/me', getUserInfo);
 
-router.get('/users/:id', userIdValidation, getUserById);
+router.get('/users/:_id', userIdValidation, getUserById);
 
 router.patch('/users/me', updateUserValidation, updateProfile);
 
