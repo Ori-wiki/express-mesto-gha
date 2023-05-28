@@ -16,6 +16,7 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 const getUserById = (req, res, next) => {
+  console.log(req);
   const { _id } = req.params;
   User.findById(_id)
     .orFail(() => {
@@ -46,15 +47,13 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => {
-      res.status(201).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id.toString(),
-        email: user.email,
-      });
-    })
+    .then((user) => res.status(201).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id,
+      email: user.email,
+    }))
     .catch((e) => {
       if (e.name === 'ValidationError') {
         throw new BadRequestError('Переданы неверные данные');
@@ -65,35 +64,6 @@ const createUser = (req, res, next) => {
       }
     })
     .catch(next);
-  // const {
-  //   name, about, avatar, email, password,
-  // } = req.body;
-
-  // bcrypt
-  //   .hash(password, 10)
-  //   .then((hash) => User.create({
-  //     name,
-  //     about,
-  //     avatar,
-  //     email,
-  //     password: hash,
-  //   }))
-  //   .then((user) => res.status(201).send({
-  //     name: user.name,
-  //     about: user.about,
-  //     avatar: user.avatar,
-  //     email: user.email,
-  //     _id: user._id,
-  //   }))
-  //   .catch((err) => {
-  //     if (err.name === 'ValidationError') {
-  //       return next(new BadRequestError('Неправильные данные.'));
-  //     }
-  //     if (err.code === 11000) {
-  //       return next(new MangoEmailError('Данный email уже зарегистрирован.'));
-  //     }
-  //     return next(err);
-  //   });
 };
 
 const updateProfile = (req, res, next) => {
@@ -136,10 +106,11 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials({ email, password })
     .then((user) => {
-      console.log(user);
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       } else {
+        console.log(user._id);
+        console.log({ _id: user._id });
         res.status(200).send({
           token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
         });
@@ -153,7 +124,6 @@ const login = (req, res, next) => {
 };
 
 const getUserInfo = (req, res, next) => {
-  console.log('ПУЕ');
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
