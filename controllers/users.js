@@ -4,7 +4,6 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const MangoEmailError = require('../errors/MangoEmailError');
-const AuthError = require('../errors/AuthError');
 
 // const { NODE_ENV, JWT_SECRET = 'dev-key' } = process.env;
 
@@ -27,12 +26,11 @@ const getUserById = (req, res, next) => {
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
         next(e);
       }
-    })
-    .catch(next);
+    });
 };
 const createUser = (req, res, next) => {
   const {
@@ -56,14 +54,13 @@ const createUser = (req, res, next) => {
     }))
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        throw new BadRequestError('Переданы неверные данные');
+        next(new BadRequestError('Переданы неверные данные'));
       } else if (e.code === 11000) {
-        throw new MangoEmailError('Пользователь с таким email уже зарегистрирован');
+        next(new MangoEmailError('Пользователь с таким email уже зарегистрирован'));
       } else {
         next(e);
       }
-    })
-    .catch(next);
+    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -77,12 +74,11 @@ const updateProfile = (req, res, next) => {
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        throw new BadRequestError('Переданы неправильные данные');
+        next(new BadRequestError('Переданы неправильные данные'));
       } else {
         next(e);
       }
-    })
-    .catch(next);
+    });
 };
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
@@ -95,12 +91,11 @@ const updateAvatar = (req, res, next) => {
     })
     .catch((e) => {
       if (e.name === 'ValidationError') {
-        throw new BadRequestError('Переданы неправильные данные');
+        next(new BadRequestError('Переданы неправильные данные'));
       } else {
         next(e);
       }
-    })
-    .catch(next);
+    });
 };
 const login = (req, res, next) => {
   const { email, password } = req.body;
@@ -116,9 +111,6 @@ const login = (req, res, next) => {
         });
       }
     })
-    .catch(() => {
-      throw new AuthError('Неправильный логин или пароль');
-    })
     .catch(next);
 };
 
@@ -133,12 +125,11 @@ const getUserInfo = (req, res, next) => {
     })
     .catch((e) => {
       if (e.name === 'CastError') {
-        throw new BadRequestError('Переданы неправильные данные');
+        next(new BadRequestError('Переданы неправильные данные'));
       } else {
         next(e);
       }
-    })
-    .catch(next);
+    });
 };
 module.exports = {
   createUser,
