@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
+// const validator = require('validator');
 const BadRequestError = require('../errors/BadRequestError');
 
 const signIn = celebrate({
@@ -8,7 +8,7 @@ const signIn = celebrate({
     password: Joi.string().required().min(8).max(30),
   }),
 });
-const regex = /^(http|https):\/\/(\?:www\.)?[a-zA-Z0-9-._~:/?#[]@!$&'()+,;=]+(?:#\w)?$/;
+const regex = /^(http|https)?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/im;
 
 const signUp = celebrate({
   body: Joi.object().keys({
