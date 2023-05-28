@@ -1,8 +1,6 @@
 // const jwt = require('jsonwebtoken');
 // const AuthError = require('../errors/AuthError');
 
-const { JWT_SECRET } = process.env;
-
 // const extractBearerToken = function (header) {
 //   return header.replace('Bearer ', '');
 // };
@@ -32,6 +30,8 @@ const { JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 const AuthError = require('../errors/AuthError');
 
+// const { JWT_SECRET } = process.env;
+
 const extractBearerToken = (header) => header.replace('Bearer ', '');
 
 module.exports = (req, res, next) => {
@@ -45,7 +45,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(token, 'super-secret-key');
   } catch (err) {
     return next(new AuthError('Пользователь не авторизован!'));
   }
