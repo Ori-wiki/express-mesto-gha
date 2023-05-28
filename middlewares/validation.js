@@ -1,5 +1,4 @@
 const { celebrate, Joi } = require('celebrate');
-// const validator = require('validator');
 const BadRequestError = require('../errors/BadRequestError');
 
 const signIn = celebrate({
@@ -22,12 +21,6 @@ const signUp = celebrate({
       }
       return value;
     }),
-    // avatar: Joi.string().custom((value) => {
-    //   if (!validator.isURL(value, { require_protocol: true })) {
-    //     throw new BadRequestError('Неправильный формат URL адреса');
-    //   }
-    //   return value;
-    // }),
   }),
 });
 
@@ -52,12 +45,6 @@ const updateAvatarValidation = celebrate({
       }
       return value;
     }),
-    // avatar: Joi.string().custom((value) => {
-    //   if (!validator.isURL(value, { require_protocol: true })) {
-    //     throw new BadRequestError('Неправильный формат URL адреса');
-    //   }
-    //   return value;
-    // }),
   }),
 });
 
@@ -71,10 +58,6 @@ const createCardValidation = celebrate({
           throw new BadRequestError('Неправильный формат URL адреса');
         }
         return value;
-        // if (!validator.isURL(value, { require_protocol: true })) {
-        //   throw new BadRequestError('Неправильный формат URL адреса');
-        // }
-        // return value;
       }),
   }),
 });
